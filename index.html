@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Face Mask Compliance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        header h1 {
+            color: #58a6ff;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        header p {
+            color: #8b949e;
+            font-size: 0.95rem;
+        }
+        .main-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
+        }
+        .video-container {
+            flex: 2;
+            min-width: 320px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .video-box {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #30363d;
+            background-color: #000;
+        }
+        .video-box img {
+            width: 100%;
+            display: block;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-stop { background: #da3633; color: white; }
+        .btn-snap { background: #238636; color: white; }
+        .btn:hover { opacity: 0.85; }
+
+        .side-panel {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card h3 {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .card .stat {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .status-active { color: #3fb950; }
+        .status-model { color: #58a6ff; }
+        .alert-box {
+            background: rgba(218, 54, 51, 0.1);
+            border: 1px solid #da3633;
+            color: #f85149;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none; /* Can be toggled with JavaScript */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>AI Safety Compliance Dashboard</h1>
+        <p>Real-Time Face Mask Monitoring Engine (MobileNetV2)</p>
+    </header>
+
+    <div class="main-wrapper">
+        <!-- Left: Video Feed -->
+        <div class="video-container">
+            <div class="video-box" id="videoBox">
+                <img id="streamImg" src="/video_feed" alt="Live Video Feed Stream">
+            </div>
+            <div class="controls">
+                <button class="btn btn-snap" onclick="takeSnapshot()">📷 Take Snapshot</button>
+                <button class="btn btn-stop" onclick="toggleStream()">⏸ Pause Feed</button>
+            </div>
+        </div>
+
+        <!-- Right: Status Cards & Metrics -->
+        <div class="side-panel">
+            <div class="card">
+                <h3>System Status</h3>
+                <p class="stat status-active" id="systemStatus">● Streaming Active</p>
+            </div>
+
+            <div class="card">
+                <h3>Architecture Core</h3>
+                <p class="stat status-model">MobileNetV2</p>
+                <span style="font-size:0.8rem; color:#8b949e;">Transfer Learning Model</span>
+            </div>
+
+            <div class="card">
+                <h3>Detection Framework</h3>
+                <p class="stat" style="color: #e3b341;">OpenCV + FastAPI</p>
+            </div>
+
+            <!-- Dynamic Alert Box Placeholder -->
+            <div class="alert-box" id="alertBox">
+                ⚠️ <strong>Alert:</strong> Unmasked person detected in camera view!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isStreaming = true;
+
+        function toggleStream() {
+            const img = document.getElementById("streamImg");
+            const btn = document.querySelector(".btn-stop");
+            const status = document.getElementById("systemStatus");
+
+            if (isStreaming) {
+                img.src = ""; // Stops requests
+                btn.innerText = "▶ Resume Feed";
+                btn.style.background = "#238636";
+                status.innerText = "○ Stream Paused";
+                status.style.color = "#8b949e";
+            } else {
+                img.src = "/video_feed";
+                btn.innerText = "⏸ Pause Feed";
+                btn.style.background = "#da3633";
+                status.innerText = "● Streaming Active";
+                status.style.color = "#3fb950";
+            }
+            isStreaming = !isStreaming;
+        }
+
+        function takeSnapshot() {
+            const img = document.getElementById("streamImg");
+            if (!img.src) return;
+            
+            const a = document.createElement("a");
+            a.href = img.src;
+            a.download = "mask_detection_snapshot.jpg";
+            a.click();
+        }
+    </script>
+</body>
+</html>
